@@ -50,12 +50,16 @@ app.post('/me', bodyParser.json(), stormpath.loginRequired, function (req, res) 
             username: req.user.username,
             password: req.body.existingPassword
         }, function (err) {
-            return writeError('That password is incorrect.');
-        }
-
-        )
+            if (err) {
+                return writeError('That password is incorrect.')
+            }
+            req.user.password = req.body.password;
+            saveAccount();
+        });
+    } else {
+        saveAccount();
     }
-})
+});
 
 app.get('/css/bootstrap.min.css', function (req, res) {
     res.sendFile(path.join(__dirname, 'build/css/bootstrap.min.css'));
